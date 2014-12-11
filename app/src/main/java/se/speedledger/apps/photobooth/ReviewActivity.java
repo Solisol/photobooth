@@ -18,7 +18,7 @@ public class ReviewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle bundle = this.getIntent().getExtras();
+        final Bundle bundle = this.getIntent().getExtras();
         setContentView(R.layout.activity_review);
 
         Button toStartButton = (Button) findViewById(R.id.button_go_to_start);
@@ -27,6 +27,15 @@ public class ReviewActivity extends Activity {
             @Override
             public void onClick(View v) {
                 goToStart();
+            }
+        });
+
+        Button printButton = (Button) findViewById(R.id.button_print);
+
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
             }
         });
 
@@ -72,6 +81,11 @@ public class ReviewActivity extends Activity {
             fourthImage.setImageBitmap(myBitmap);
         }
 
+    }
+
+    private void printImages(String... imagePaths) {
+        PrintPhotosTask2 printPhotosTask2 = new PrintPhotosTask2(getApplicationContext());
+        printPhotosTask2.execute(imagePaths);
     }
 
     private void goToStart() {
