@@ -60,8 +60,11 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
         Log.d(TAG, "Filepath to image is: " + filePath);
         File imgFile = new  File(filePath);
         Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        int width = (int) (bm.getWidth() * 0.10);
+        int height = (int) (bm.getHeight() * 0.10);
+        Bitmap smallBitmap = Bitmap.createScaledBitmap(bm, width, height, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 30, baos); //bm is the bitmap object
+        smallBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
         String encodedImage = Base64.encodeToString(b, Base64.NO_WRAP);
         /*
