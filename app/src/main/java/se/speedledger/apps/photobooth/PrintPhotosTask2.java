@@ -57,6 +57,7 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
         byte[] b = baos.toByteArray();
         String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
         */
+        Log.d(TAG, "Filepath to image is: " + filePath);
         File imgFile = new  File(filePath);
         Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -110,6 +111,7 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
                 e.printStackTrace();
             }
 
+            Log.d(TAG, "Little printer says: " + s);
             System.out.println(s);
             try {
                 inputStream.close();
