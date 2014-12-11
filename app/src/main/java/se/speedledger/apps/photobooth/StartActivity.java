@@ -92,6 +92,11 @@ public class StartActivity extends Activity {
     private void sendImage(View view) {
         Log.d("tag", "Sending image");
 
+        InputStream is = getResources().openRawResource(R.raw.test);
+        new SendFileTask().execute(is);
+        //sendFile();
+
+        /*
         String textToSaveString = "Helldfsdfsdfo Android";
 
         writeToFile(textToSaveString);
@@ -99,19 +104,17 @@ public class StartActivity extends Activity {
         String textFromFileString =  readFromFile();
 
         Log.i(TAG, textFromFileString);
+        */
 
         //new SendFileTask().execute("");
     }
 
     private void sendFile() {
-        AssetManager am = getApplicationContext().getAssets();
-        try {
-            InputStream is = am.open("8078313_orig.jpg");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        InputStream is = getResources().openRawResource(R.raw.test);
 
-        Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
+        //Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
+
+        Bitmap bm = BitmapFactory.decodeStream(is);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
