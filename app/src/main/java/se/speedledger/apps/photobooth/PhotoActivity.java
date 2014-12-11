@@ -15,7 +15,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -25,18 +24,23 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.widget.FrameLayout.*;
 
 public class PhotoActivity extends Activity {
     private final String TAG = "PhotoActivity";
     Preview preview;
-    Button buttonClick;
     Camera camera;
     Activity activity;
     Context context;
     ImageView countDownImage;
+    Intent intent;
+    private Bundle bundle;
+    private int pictureRound;
+    private int saveRound;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,12 @@ public class PhotoActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_photo);
+
+        pictureRound = 1;
+        saveRound = 0;
+
+        bundle = new Bundle();
 
         countDownImage = (ImageView) findViewById(R.id.count_down);
 
@@ -59,33 +68,12 @@ public class PhotoActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
+                Log.d(TAG, "Starting serie of pictures");
                 takePicture();
             }
         });
 
         Toast.makeText(context, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
-
-        buttonClick = (Button) findViewById(R.id.button_capture);
-
-        buttonClick.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                //				preview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                takePicture();
-            }
-        });
-
-        buttonClick.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View arg0) {
-                camera.autoFocus(new AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(boolean arg0, Camera arg1) {
-                        takePicture();
-                    }
-                });
-                return true;
-            }
-        });
     }
 
     private void countDown() {
@@ -98,8 +86,9 @@ public class PhotoActivity extends Activity {
         new CountDownTimer(4000, 1000) {
 
             int tick = 0;
+
             public void onTick(long millisUntilFinished) {
-                if(tick < 3) {
+                if (tick < 3) {
                     countDownImage.setImageResource(drawables.get(tick));
                     tick++;
                 }
@@ -107,13 +96,21 @@ public class PhotoActivity extends Activity {
 
             public void onFinish() {
                 countDownImage.setVisibility(INVISIBLE);
+                Log.d(TAG, "Take picture");
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
             }
         }.start();
     }
 
     private void takePicture() {
+        Log.d(TAG, "Round " + pictureRound);
         countDown();
+    }
+
+    private void goToReview() {
+        intent = new Intent(this, ReviewActivity.class);
+        intent.putExtra(Constants.EXTRA, bundle);
+        startActivity(intent);
     }
 
     @Override
@@ -181,23 +178,26 @@ public class PhotoActivity extends Activity {
             new SaveImageTask().execute(data);
             resetCam();
             Log.d(TAG, "onPictureTaken - jpeg");
+            if (pictureRound < 4) {
+                pictureRound++;
+                takePicture();
+            }
         }
     };
 
-    private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
+    private class SaveImageTask extends AsyncTask<byte[], Void, Boolean> {
 
         @Override
-        protected Void doInBackground(byte[]... data) {
+        protected Boolean doInBackground(byte[]... data) {
             FileOutputStream outStream = null;
 
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File dir = new File(sdCard.getAbsolutePath() + "/camtest");
+                File dir = new File(sdCard.getAbsolutePath() + "/photobooth");
                 dir.mkdirs();
 
-                String fileName = String.format("%d.jpg", System.currentTimeMillis());
-                File outFile = new File(dir, fileName);
+                File outFile = createImageFile(dir);
 
                 outStream = new FileOutputStream(outFile);
                 outStream.write(data[0]);
@@ -212,8 +212,42 @@ public class PhotoActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                saveRound++;
             }
-            return null;
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            Log.d(TAG, "on post execute");
+            if (saveRound == 4) {
+                Log.d(TAG, "Go to review");
+                goToReview();
+            }
+        }
+
+        private File createImageFile(File storageDir) throws IOException {
+            // Create an image file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File image = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+
+            // Add file path to bundle
+            String key = "";
+            if (pictureRound == 1) {
+                bundle.putString(Constants.FIRST, image.getAbsolutePath());
+            } else if (pictureRound == 2) {
+                bundle.putString(Constants.SECOND, image.getAbsolutePath());
+            } else if (pictureRound == 3) {
+                bundle.putString(Constants.THIRD, image.getAbsolutePath());
+            } else {
+                bundle.putString(Constants.FOURTH, image.getAbsolutePath());
+            }
+            return image;
         }
 
     }
