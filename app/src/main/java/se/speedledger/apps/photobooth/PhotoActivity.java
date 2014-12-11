@@ -8,6 +8,7 @@ import android.hardware.Camera.*;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -16,12 +17,15 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static android.widget.FrameLayout.*;
 
@@ -32,6 +36,7 @@ public class PhotoActivity extends Activity {
     Camera camera;
     Activity activity;
     Context context;
+    ImageView countDownImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,20 +48,72 @@ public class PhotoActivity extends Activity {
 
         setContentView(R.layout.main);
 
-        preview = new Preview(this, (SurfaceView)findViewById(R.id.surfaceView));
+        countDownImage = (ImageView) findViewById(R.id.count_down);
+
+        preview = new Preview(this, (SurfaceView) findViewById(R.id.surfaceView));
         preview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        ((FrameLayout) findViewById(R.id.layout)).addView(preview);
+        ((RelativeLayout) findViewById(R.id.layout)).addView(preview);
         preview.setKeepScreenOn(true);
 
         preview.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                takePicture();
             }
         });
 
         Toast.makeText(context, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
+
+        buttonClick = (Button) findViewById(R.id.button_capture);
+
+        buttonClick.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                //				preview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                takePicture();
+            }
+        });
+
+        buttonClick.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View arg0) {
+                camera.autoFocus(new AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean arg0, Camera arg1) {
+                        takePicture();
+                    }
+                });
+                return true;
+            }
+        });
+    }
+
+    private void countDown() {
+        countDownImage.setImageResource(R.drawable.three);
+        countDownImage.setVisibility(VISIBLE);
+        final ArrayList<Integer> drawables = new ArrayList<Integer>();
+        drawables.add(0, R.drawable.three);
+        drawables.add(1, R.drawable.two);
+        drawables.add(2, R.drawable.one);
+        new CountDownTimer(4000, 1000) {
+
+            int tick = 0;
+            public void onTick(long millisUntilFinished) {
+                if(tick < 3) {
+                    countDownImage.setImageResource(drawables.get(tick));
+                    tick++;
+                }
+            }
+
+            public void onFinish() {
+                countDownImage.setVisibility(INVISIBLE);
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            }
+        }.start();
+    }
+
+    private void takePicture() {
+        countDown();
     }
 
     @Override
@@ -64,32 +121,17 @@ public class PhotoActivity extends Activity {
         super.onResume();
         int numCams = Camera.getNumberOfCameras();
         Log.d(this.getLocalClassName(), "Number of cameras: " + numCams);
-        if(numCams > 0){
-            try{
+        if (numCams > 0) {
+            try {
                 releaseCameraAndPreview();
                 camera = Camera.open(1);
                 camera.startPreview();
                 preview.setCamera(camera);
-            } catch (RuntimeException ex){
+            } catch (RuntimeException ex) {
                 Log.e(this.getLocalClassName(), "Could not open camera");
                 Toast.makeText(context, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    private boolean safeCameraOpen(int id) {
-        boolean qOpened = false;
-
-        try {
-            releaseCameraAndPreview();
-            camera = Camera.open(id);
-            qOpened = (camera != null);
-        } catch (Exception e) {
-            Log.e(getString(R.string.app_name), "failed to open Camera");
-            e.printStackTrace();
-        }
-
-        return qOpened;
     }
 
     private void releaseCameraAndPreview() {
@@ -102,7 +144,7 @@ public class PhotoActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if(camera != null) {
+        if (camera != null) {
             camera.stopPreview();
             preview.setCamera(null);
             camera.release();
@@ -117,7 +159,7 @@ public class PhotoActivity extends Activity {
     }
 
     private void refreshGallery(File file) {
-        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.fromFile(file));
         sendBroadcast(mediaScanIntent);
     }
@@ -151,7 +193,7 @@ public class PhotoActivity extends Activity {
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File dir = new File (sdCard.getAbsolutePath() + "/camtest");
+                File dir = new File(sdCard.getAbsolutePath() + "/camtest");
                 dir.mkdirs();
 
                 String fileName = String.format("%d.jpg", System.currentTimeMillis());

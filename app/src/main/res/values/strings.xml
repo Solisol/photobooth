@@ -10,7 +10,7 @@
     <string name="take_photo_button">Take a photo</string>
 
     <!-- UI Elements -->
-    <string name="btn_capture">Click</string>
+    <string name="button_capture">Click</string>
 
     <!-- Toast Messages -->
     <string name="camera_not_found">No camera harware found</string>
