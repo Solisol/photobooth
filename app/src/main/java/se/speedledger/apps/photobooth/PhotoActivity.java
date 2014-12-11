@@ -26,18 +26,18 @@ import java.io.IOException;
 import static android.widget.FrameLayout.*;
 
 public class PhotoActivity extends Activity {
-    private static final String TAG = "CamTestActivity";
+    private final String TAG = "PhotoActivity";
     Preview preview;
     Button buttonClick;
     Camera camera;
-    Activity act;
-    Context ctx;
+    Activity activity;
+    Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ctx = this;
-        act = this;
+        context = this;
+        activity = this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -56,29 +56,7 @@ public class PhotoActivity extends Activity {
             }
         });
 
-        Toast.makeText(ctx, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
-
-        //		buttonClick = (Button) findViewById(R.id.btnCapture);
-        //
-        //		buttonClick.setOnClickListener(new OnClickListener() {
-        //			public void onClick(View v) {
-        ////				preview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-        //				camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-        //			}
-        //		});
-        //
-        //		buttonClick.setOnLongClickListener(new OnLongClickListener(){
-        //			@Override
-        //			public boolean onLongClick(View arg0) {
-        //				camera.autoFocus(new AutoFocusCallback(){
-        //					@Override
-        //					public void onAutoFocus(boolean arg0, Camera arg1) {
-        //						//camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-        //					}
-        //				});
-        //				return true;
-        //			}
-        //		});
+        Toast.makeText(context, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -88,30 +66,39 @@ public class PhotoActivity extends Activity {
         Log.d(this.getLocalClassName(), "Number of cameras: " + numCams);
         if(numCams > 0){
             try{
+                releaseCameraAndPreview();
                 camera = Camera.open(1);
                 camera.startPreview();
                 preview.setCamera(camera);
             } catch (RuntimeException ex){
                 Log.e(this.getLocalClassName(), "Could not open camera");
-                Toast.makeText(ctx, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-//    private boolean safeCameraOpen(int id) {
-//        boolean qOpened = false;
-//
-//        try {
-//            releaseCameraAndPreview();
-//            mCamera = Camera.open(id);
-//            qOpened = (mCamera != null);
-//        } catch (Exception e) {
-//            Log.e(getString(R.string.app_name), "failed to open Camera");
-//            e.printStackTrace();
-//        }
-//
-//        return qOpened;
-//    }
+    private boolean safeCameraOpen(int id) {
+        boolean qOpened = false;
+
+        try {
+            releaseCameraAndPreview();
+            camera = Camera.open(id);
+            qOpened = (camera != null);
+        } catch (Exception e) {
+            Log.e(getString(R.string.app_name), "failed to open Camera");
+            e.printStackTrace();
+        }
+
+        return qOpened;
+    }
+
+    private void releaseCameraAndPreview() {
+        preview.setCamera(null);
+        if (camera != null) {
+            camera.release();
+            camera = null;
+        }
+    }
 
     @Override
     protected void onPause() {
