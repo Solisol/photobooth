@@ -43,7 +43,7 @@ public class PhotoActivity extends Activity {
 
         setContentView(R.layout.main);
 
-        preview = new Preview(this, (SurfaceView)findViewById(R.id.surfaceView));
+        preview = new Preview(this, (SurfaceView) findViewById(R.id.surfaceView));
         preview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         ((FrameLayout) findViewById(R.id.layout)).addView(preview);
         preview.setKeepScreenOn(true);
@@ -57,6 +57,28 @@ public class PhotoActivity extends Activity {
         });
 
         Toast.makeText(context, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
+
+        buttonClick = (Button) findViewById(R.id.button_capture);
+
+        buttonClick.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                //				preview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            }
+        });
+
+        buttonClick.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View arg0) {
+                camera.autoFocus(new AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean arg0, Camera arg1) {
+                        //camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                    }
+                });
+                return true;
+            }
+        });
     }
 
     @Override
@@ -64,32 +86,17 @@ public class PhotoActivity extends Activity {
         super.onResume();
         int numCams = Camera.getNumberOfCameras();
         Log.d(this.getLocalClassName(), "Number of cameras: " + numCams);
-        if(numCams > 0){
-            try{
+        if (numCams > 0) {
+            try {
                 releaseCameraAndPreview();
                 camera = Camera.open(1);
                 camera.startPreview();
                 preview.setCamera(camera);
-            } catch (RuntimeException ex){
+            } catch (RuntimeException ex) {
                 Log.e(this.getLocalClassName(), "Could not open camera");
                 Toast.makeText(context, getString(R.string.camera_not_found), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    private boolean safeCameraOpen(int id) {
-        boolean qOpened = false;
-
-        try {
-            releaseCameraAndPreview();
-            camera = Camera.open(id);
-            qOpened = (camera != null);
-        } catch (Exception e) {
-            Log.e(getString(R.string.app_name), "failed to open Camera");
-            e.printStackTrace();
-        }
-
-        return qOpened;
     }
 
     private void releaseCameraAndPreview() {
@@ -102,7 +109,7 @@ public class PhotoActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if(camera != null) {
+        if (camera != null) {
             camera.stopPreview();
             preview.setCamera(null);
             camera.release();
@@ -117,7 +124,7 @@ public class PhotoActivity extends Activity {
     }
 
     private void refreshGallery(File file) {
-        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.fromFile(file));
         sendBroadcast(mediaScanIntent);
     }
@@ -151,7 +158,7 @@ public class PhotoActivity extends Activity {
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File dir = new File (sdCard.getAbsolutePath() + "/camtest");
+                File dir = new File(sdCard.getAbsolutePath() + "/camtest");
                 dir.mkdirs();
 
                 String fileName = String.format("%d.jpg", System.currentTimeMillis());
