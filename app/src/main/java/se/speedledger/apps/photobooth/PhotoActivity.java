@@ -8,6 +8,7 @@ import android.hardware.Camera.*;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -16,12 +17,15 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static android.widget.FrameLayout.*;
 
@@ -32,6 +36,7 @@ public class PhotoActivity extends Activity {
     Camera camera;
     Activity activity;
     Context context;
+    ImageView countDownImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,16 +48,18 @@ public class PhotoActivity extends Activity {
 
         setContentView(R.layout.main);
 
+        countDownImage = (ImageView) findViewById(R.id.count_down);
+
         preview = new Preview(this, (SurfaceView) findViewById(R.id.surfaceView));
         preview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        ((FrameLayout) findViewById(R.id.layout)).addView(preview);
+        ((RelativeLayout) findViewById(R.id.layout)).addView(preview);
         preview.setKeepScreenOn(true);
 
         preview.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                takePicture();
             }
         });
 
@@ -63,7 +70,7 @@ public class PhotoActivity extends Activity {
         buttonClick.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //				preview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                takePicture();
             }
         });
 
@@ -73,12 +80,40 @@ public class PhotoActivity extends Activity {
                 camera.autoFocus(new AutoFocusCallback() {
                     @Override
                     public void onAutoFocus(boolean arg0, Camera arg1) {
-                        //camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                        takePicture();
                     }
                 });
                 return true;
             }
         });
+    }
+
+    private void countDown() {
+        countDownImage.setImageResource(R.drawable.three);
+        countDownImage.setVisibility(VISIBLE);
+        final ArrayList<Integer> drawables = new ArrayList<Integer>();
+        drawables.add(0, R.drawable.three);
+        drawables.add(1, R.drawable.two);
+        drawables.add(2, R.drawable.one);
+        new CountDownTimer(4000, 1000) {
+
+            int tick = 0;
+            public void onTick(long millisUntilFinished) {
+                if(tick < 3) {
+                    countDownImage.setImageResource(drawables.get(tick));
+                    tick++;
+                }
+            }
+
+            public void onFinish() {
+                countDownImage.setVisibility(INVISIBLE);
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            }
+        }.start();
+    }
+
+    private void takePicture() {
+        countDown();
     }
 
     @Override
