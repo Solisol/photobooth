@@ -91,7 +91,7 @@ public class StartActivity extends Activity {
         Log.d("tag", "Sending image");
 
         InputStream is = getResources().openRawResource(R.raw.test);
-        new PrintPhotosTask().execute(is);
+        //new PrintPhotosTask().execute(is);
         //sendFile();
 
         /*
