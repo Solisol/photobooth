@@ -3,7 +3,6 @@ package se.speedledger.apps.photobooth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +91,7 @@ public class StartActivity extends Activity {
         Log.d("tag", "Sending image");
 
         InputStream is = getResources().openRawResource(R.raw.test);
-        new SendFileTask().execute(is);
+        new PrintPhotosTask().execute(is);
         //sendFile();
 
         /*
@@ -106,7 +104,7 @@ public class StartActivity extends Activity {
         Log.i(TAG, textFromFileString);
         */
 
-        //new SendFileTask().execute("");
+        //new PrintPhotosTask().execute("");
     }
 
     private void sendFile() {

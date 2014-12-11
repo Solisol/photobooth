@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class ReviewActivity extends Activity {
     @Override
@@ -25,6 +24,15 @@ public class ReviewActivity extends Activity {
             }
         });
 
+        Button printButton = (Button) findViewById(R.id.button_print);
+
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                printPhotos();
+            }
+        });
+
         String paths = "";
         if(bundle != null) {
             Log.d(this.getLocalClassName(), "Bundle has stuffs!!!");
@@ -37,8 +45,14 @@ public class ReviewActivity extends Activity {
         }
     }
 
+    private void printPhotos(String... paths) {
+        PrintPhotosTask printPhotosTask = new PrintPhotosTask();
+    }
+
     private void goToStart() {
         Intent intent = new Intent(this, StartActivity.class);
         startActivity(intent);
     }
+
+
 }
