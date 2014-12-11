@@ -16,5 +16,6 @@
     <string name="camera_not_found">No camera harware found</string>
     <string name="take_photo_help">Touch anywhere on screen to take picture</string>
     <string name="to_start">Return to start screen</string>
+    <string name="print">Print photos</string>
 
 </resources>

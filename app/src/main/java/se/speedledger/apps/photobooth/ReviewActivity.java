@@ -25,7 +25,6 @@ public class ReviewActivity extends Activity {
             }
         });
 
-        TextView filePathView = (TextView) findViewById(R.id.text_file_path);
         String paths = "";
         if(bundle != null) {
             Log.d(this.getLocalClassName(), "Bundle has stuffs!!!");
@@ -36,7 +35,6 @@ public class ReviewActivity extends Activity {
         } else {
             Log.d(this.getLocalClassName(), "Bundle is null!");
         }
-        filePathView.setText(paths);
     }
 
     private void goToStart() {
