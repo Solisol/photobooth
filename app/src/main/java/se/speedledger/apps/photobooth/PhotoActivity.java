@@ -160,13 +160,11 @@ public class PhotoActivity extends Activity {
 
     ShutterCallback shutterCallback = new ShutterCallback() {
         public void onShutter() {
-            //			 Log.d(TAG, "onShutter'd");
         }
     };
 
     PictureCallback rawCallback = new PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            //			 Log.d(TAG, "onPictureTaken - raw");
         }
     };
 
