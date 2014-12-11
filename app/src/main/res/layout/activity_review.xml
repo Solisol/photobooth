@@ -3,33 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnCount="2"
         android:rowCount="2">
 
-        <ImageView
-            android:id="@+id/image_first"
-            android:layout_columnSpan="1"
-            android:layout_rowSpan="1" />
+        <TableRow>
 
-        <ImageView
-            android:id="@+id/image_second"
-            android:layout_columnSpan="1"
-            android:layout_rowSpan="1" />
+            <ImageView
+                android:id="@+id/image_first"
+                android:layout_column="0"
+                android:scaleType="fitCenter" />
 
-        <ImageView
-            android:id="@+id/image_third"
-            android:layout_columnSpan="1"
-            android:layout_rowSpan="1" />
+            <ImageView
+                android:id="@+id/image_second"
+                android:layout_column="1"
+                android:scaleType="fitCenter" />
+        </TableRow>
 
-        <ImageView
-            android:id="@+id/image_fourth"
-            android:layout_columnSpan="1"
-            android:layout_rowSpan="1" />
+        <TableRow>
 
-    </GridLayout>
+            <ImageView
+                android:id="@+id/image_third"
+                android:layout_column="0"
+                android:scaleType="fitCenter" />
+
+            <ImageView
+                android:id="@+id/image_fourth"
+                android:layout_column="1"
+                android:scaleType="fitCenter" />
+        </TableRow>
+    </TableLayout>
 
     <Button
         android:id="@+id/button_go_to_start"
@@ -43,9 +48,9 @@
         android:id="@+id/button_print"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/button_go_to_start"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_below="@id/button_go_to_start"
         android:text="@string/print" />
 
 </RelativeLayout>
