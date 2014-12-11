@@ -56,29 +56,29 @@ public class ReviewActivity extends Activity {
         File imgFile = new  File(firstPath);
         if(imgFile.exists()){
             ImageView firstImage = (ImageView) findViewById(R.id.image_first);
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            firstImage.setImageBitmap(myBitmap);
+            Bitmap firstBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            firstImage.setImageBitmap(firstBitmap);
         }
 
         File imgFile2 = new  File(secondPath);
         if(imgFile2.exists()){
             ImageView secondImage = (ImageView) findViewById(R.id.image_second);
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile2.getAbsolutePath());
-            secondImage.setImageBitmap(myBitmap);
+            Bitmap secondBitmap = BitmapFactory.decodeFile(imgFile2.getAbsolutePath());
+            secondImage.setImageBitmap(secondBitmap);
         }
 
-        File imgFile3 = new  File(firstPath);
+        File imgFile3 = new  File(thirdPath);
         if(imgFile.exists()){
             ImageView thirdImage = (ImageView) findViewById(R.id.image_third);
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile3.getAbsolutePath());
-            thirdImage.setImageBitmap(myBitmap);
+            Bitmap thirdBitmap = BitmapFactory.decodeFile(imgFile3.getAbsolutePath());
+            thirdImage.setImageBitmap(thirdBitmap);
         }
 
-        File imgFile4 = new  File(firstPath);
+        File imgFile4 = new  File(fourthPath);
         if(imgFile.exists()){
             ImageView fourthImage = (ImageView) findViewById(R.id.image_fourth);
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile4.getAbsolutePath());
-            fourthImage.setImageBitmap(myBitmap);
+            Bitmap fourthBitmap = BitmapFactory.decodeFile(imgFile4.getAbsolutePath());
+            fourthImage.setImageBitmap(fourthBitmap);
         }
 
     }
