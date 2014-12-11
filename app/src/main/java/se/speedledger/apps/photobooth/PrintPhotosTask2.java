@@ -1,6 +1,8 @@
 package se.speedledger.apps.photobooth;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
@@ -16,6 +18,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,11 +39,13 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... filePaths) {
-        sendFile2(filePaths);
+        for (String path : filePaths) {
+            sendFile2(path);
+        }
         return true;
     }
 
-    private void sendFile2(String... filePaths) {
+    private void sendFile2(String filePath) {
         //InputStream is = getResources().openRawResource(R.raw.test);
 
         //Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
@@ -52,15 +57,23 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
         byte[] b = baos.toByteArray();
         String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
         */
+        File imgFile = new  File(filePath);
+        Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 30, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(b, Base64.NO_WRAP);
+        /*
         String image = null;
         try {
             image = Base64.encodeToString(inputStreamToBytes(context.openFileInput(filePaths[0])), Base64.NO_WRAP);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
         String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
-                image +
+                encodedImage +
                 "\" alt=\"Red dot\" />";
 
         String html = "<html><head><meta charset=\"utf-8\"></head><body><h1>An image!</h1>" +
