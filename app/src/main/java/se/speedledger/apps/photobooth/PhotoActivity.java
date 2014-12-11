@@ -38,7 +38,6 @@ public class PhotoActivity extends Activity {
     Context context;
     ImageView countDownImage;
     Intent intent;
-    private Bundle bundle;
     private int pictureRound;
     private int saveRound;
 
@@ -55,7 +54,7 @@ public class PhotoActivity extends Activity {
         pictureRound = 1;
         saveRound = 0;
 
-        bundle = new Bundle();
+        intent = new Intent(this, ReviewActivity.class);
 
         countDownImage = (ImageView) findViewById(R.id.count_down);
 
@@ -108,8 +107,6 @@ public class PhotoActivity extends Activity {
     }
 
     private void goToReview() {
-        intent = new Intent(this, ReviewActivity.class);
-        intent.putExtra(Constants.EXTRA, bundle);
         startActivity(intent);
     }
 
@@ -219,7 +216,6 @@ public class PhotoActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            Log.d(TAG, "on post execute");
             if (saveRound == 4) {
                 Log.d(TAG, "Go to review");
                 goToReview();
@@ -239,13 +235,17 @@ public class PhotoActivity extends Activity {
             // Add file path to bundle
             String key = "";
             if (pictureRound == 1) {
-                bundle.putString(Constants.FIRST, image.getAbsolutePath());
+                Log.d(TAG, "FIRST");
+                intent.putExtra(Constants.FIRST, image.getAbsolutePath());
             } else if (pictureRound == 2) {
-                bundle.putString(Constants.SECOND, image.getAbsolutePath());
+                Log.d(TAG, "SECOND");
+                intent.putExtra(Constants.SECOND, image.getAbsolutePath());
             } else if (pictureRound == 3) {
-                bundle.putString(Constants.THIRD, image.getAbsolutePath());
+                Log.d(TAG, "THIRD");
+                intent.putExtra(Constants.THIRD, image.getAbsolutePath());
             } else {
-                bundle.putString(Constants.FOURTH, image.getAbsolutePath());
+                Log.d(TAG, "FOURTH");
+                intent.putExtra(Constants.FOURTH, image.getAbsolutePath());
             }
             return image;
         }
