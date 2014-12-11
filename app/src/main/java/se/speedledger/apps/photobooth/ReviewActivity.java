@@ -30,15 +30,6 @@ public class ReviewActivity extends Activity {
             }
         });
 
-        Button printButton = (Button) findViewById(R.id.button_print);
-
-        printButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
-            }
-        });
-
         String firstPath = "";
         String secondPath = "";
         String thirdPath = "";
@@ -54,9 +45,10 @@ public class ReviewActivity extends Activity {
         }
 
         File imgFile = new  File(firstPath);
+        Bitmap firstBitmap = null;
         if(imgFile.exists()){
             ImageView firstImage = (ImageView) findViewById(R.id.image_first);
-            Bitmap firstBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            firstBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             firstImage.setImageBitmap(firstBitmap);
         }
 
@@ -80,6 +72,17 @@ public class ReviewActivity extends Activity {
             Bitmap fourthBitmap = BitmapFactory.decodeFile(imgFile4.getAbsolutePath());
             fourthImage.setImageBitmap(fourthBitmap);
         }
+
+        Button printButton = (Button) findViewById(R.id.button_print);
+
+        final Bitmap finalFirstBitmap = firstBitmap;
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new PrintPhotosTask().execute(finalFirstBitmap);
+                //printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
+            }
+        });
 
     }
 

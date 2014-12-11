@@ -28,37 +28,37 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintPhotosTask extends AsyncTask<InputStream, Integer, Boolean> {
-
-    private Context context;
+public class PrintPhotosTask extends AsyncTask<Bitmap, Integer, Boolean> {
 
     @Override
-    protected Boolean doInBackground(InputStream... params) {
+    protected Boolean doInBackground(Bitmap... params) {
         sendFile2(params[0]);
         return true;
     }
 
-    private void sendFile2(InputStream is) {
+    private void sendFile2(Bitmap bm) {
         //InputStream is = getResources().openRawResource(R.raw.test);
 
         //Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
-
         /*
         Bitmap bm = BitmapFactory.decodeStream(is);
+        */
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-        */
+        String encodedImage = Base64.encodeToString(b, Base64.NO_WRAP);
+
+/*
         String image = null;
         try {
             image = Base64.encodeToString(inputStreamToBytes(is), Base64.NO_WRAP);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
         String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
-                image +
+                encodedImage +
                 "\" alt=\"Red dot\" />";
 
         String html = "<html><head><meta charset=\"utf-8\"></head><body><h1>An image!</h1>" +
