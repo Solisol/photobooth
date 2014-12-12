@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.File;
 
@@ -35,7 +34,6 @@ public class ReviewActivity extends Activity {
         printButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //PrintPhotosTask2 printPhotosTask2 = new PrintPhotosTask2(getApplicationContext());
                 printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
             }
         });
@@ -84,8 +82,7 @@ public class ReviewActivity extends Activity {
     }
 
     private void printImages(String... imagePaths) {
-        PrintPhotosTask2 printPhotosTask2 = new PrintPhotosTask2(getApplicationContext());
-        printPhotosTask2.execute(imagePaths);
+        new SendPhotosToLittlePrinterTask().execute(imagePaths);
     }
 
     private void goToStart() {

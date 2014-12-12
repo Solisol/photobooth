@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -89,37 +90,36 @@ public class StartActivity extends Activity {
 
     private void sendImage(View view) {
         Log.d("tag", "Sending image");
-
-        InputStream is = getResources().openRawResource(R.raw.test);
-        //new PrintPhotosTask().execute(is);
-        //sendFile();
-
-        /*
-        String textToSaveString = "Helldfsdfsdfo Android";
-
-        writeToFile(textToSaveString);
-
-        String textFromFileString =  readFromFile();
-
-        Log.i(TAG, textFromFileString);
-        */
-
-        //new PrintPhotosTask().execute("");
+        PrintTask printTask = new PrintTask(getApplicationContext());
+        printTask.execute("");
     }
 
-    private void sendFile() {
-        InputStream is = getResources().openRawResource(R.raw.test);
+    private void sendFile2() {
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.raw.skepp);
 
-        //Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
+        // rotate
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap rotatedBitMap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
 
-        Bitmap bm = BitmapFactory.decodeStream(is);
+        // resize
+        int maxWidth = 350;
+        int rotatedWidth = rotatedBitMap.getWidth();
+        double ratio = (double)maxWidth / (double)rotatedWidth;
+        int newWidth = (int) (rotatedBitMap.getWidth() * ratio);
+        int newHeight = (int) (rotatedBitMap.getHeight() * ratio);
+
+        Bitmap smallBitmap = Bitmap.createScaledBitmap(rotatedBitMap, newWidth, newHeight, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+        smallBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+        String encodedImage = Base64.encodeToString(b, Base64.NO_WRAP);
+        sendImage(encodedImage);
+    }
 
+    private void sendImage(String image) {
         String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
-                encodedImage +
+                image +
                 "\" alt=\"Red dot\" />";
 
         String html = "<html><head><meta charset=\"utf-8\"></head><body><h1>An image!</h1>" +
@@ -175,47 +175,4 @@ public class StartActivity extends Activity {
         }
         return total.toString();
     }
-
-    private void writeToFile(String data) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(FILENAME, Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e(TAG, "File write failed: " + e.toString());
-        }
-
-    }
-
-    private String readFromFile() {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = openFileInput(FILENAME);
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e(TAG, "Can not read file: " + e.toString());
-        }
-
-        return ret;
-    }
-
 }

@@ -1,11 +1,12 @@
 package se.speedledger.apps.photobooth;
 
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.util.Base64;
-import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,8 +19,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,56 +26,50 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
 
-    private static final String TAG = PrintPhotosTask2.class.getName();
+/**
+ * Only used to test static image
+ */
+public class PrintTask extends AsyncTask<String, Integer, Boolean> {
 
     private Context context;
 
-    public PrintPhotosTask2(Context context) {
+    public PrintTask(Context context) {
         this.context = context;
     }
 
     @Override
-    protected Boolean doInBackground(String... filePaths) {
-        for (String path : filePaths) {
-            sendFile2(path);
-        }
+    protected Boolean doInBackground(String... params) {
+        sendFile2();
         return true;
     }
 
-    private void sendFile2(String filePath) {
-        //InputStream is = getResources().openRawResource(R.raw.test);
+    private void sendFile2() {
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.raw.skepp);
 
-        //Bitmap bm = BitmapFactory.decodeFile("/assets/8078313_orig.jpg");
+        // rotate
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap rotatedBitMap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
 
-        /*
-        Bitmap bm = BitmapFactory.decodeStream(is);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-        byte[] b = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-        */
-        File imgFile = new  File(filePath);
-        Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        int width = (int) (bm.getWidth() * 0.10);
-        int height = (int) (bm.getHeight() * 0.10);
-        Bitmap smallBitmap = Bitmap.createScaledBitmap(bm, width, height, false);
+        // resize
+        int maxWidth = 380;
+        int rotatedWidth = rotatedBitMap.getWidth();
+        double ratio = (double)maxWidth / (double)rotatedWidth;
+        int newWidth = (int) (rotatedBitMap.getWidth() * ratio);
+        int newHeight = (int) (rotatedBitMap.getHeight() * ratio);
+
+        Bitmap smallBitmap = Bitmap.createScaledBitmap(rotatedBitMap, newWidth, newHeight, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         smallBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
         String encodedImage = Base64.encodeToString(b, Base64.NO_WRAP);
-        /*
-        String image = null;
-        try {
-            image = Base64.encodeToString(inputStreamToBytes(context.openFileInput(filePaths[0])), Base64.NO_WRAP);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
+        sendImage(encodedImage);
+    }
 
+    private void sendImage(String image) {
         String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
-                encodedImage +
+                image +
                 "\" alt=\"Red dot\" />";
 
         String html = "<html><head><meta charset=\"utf-8\"></head><body><h1>An image!</h1>" +
@@ -132,19 +125,4 @@ public class PrintPhotosTask2 extends AsyncTask<String, Integer, Boolean> {
         }
         return total.toString();
     }
-
-    private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-
-        return byteBuffer.toByteArray();
-    }
-
 }
