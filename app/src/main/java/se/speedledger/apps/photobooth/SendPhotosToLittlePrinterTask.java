@@ -1,11 +1,13 @@
 package se.speedledger.apps.photobooth;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,20 +28,26 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, Boolean> {
+public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, String> {
 
     private static final String TAG = SendPhotosToLittlePrinterTask.class.getName();
     private static final String URL_TO_LITTLE_PRINTER = "http://remote.bergcloud.com/playground/direct_print/WXNPLLKDLWHP";
 
     @Override
-    protected Boolean doInBackground(String... filePaths) {
+    protected String doInBackground(String... filePaths) {
+        String result = "";
         for (String path : filePaths) {
-            sendFile2(path);
+            result = result + sendFile2(path) + " ";
         }
-        return true;
+        return result;
     }
 
-    private void sendFile2(String filePath) {
+    @Override
+    protected void onPostExecute(String result) {
+        StartActivity.makeToast(result);
+    }
+
+    private String sendFile2(String filePath) {
         File imgFile = new  File(filePath);
         Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
@@ -52,6 +60,7 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, Bo
         String response = sendToLittlePrinter(html);
 
         Log.d(TAG, "Respons from Little printer: " + response);
+        return response;
     }
 
     private String sendToLittlePrinter(String html) {

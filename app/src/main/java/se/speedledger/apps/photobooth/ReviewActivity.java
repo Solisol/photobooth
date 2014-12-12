@@ -35,6 +35,7 @@ public class ReviewActivity extends Activity {
             @Override
             public void onClick(View v) {
                 printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
+                goToStart();
             }
         });
 
