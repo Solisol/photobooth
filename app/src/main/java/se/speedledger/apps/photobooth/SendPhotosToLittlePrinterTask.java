@@ -35,7 +35,11 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, St
 
     @Override
     protected String doInBackground(String... filePaths) {
-        return sendFiles(filePaths);
+        String result = "";
+        for (String path : filePaths) {
+            result = result + sendFile(path) + ", ";
+        }
+        return result;
     }
 
     @Override
@@ -43,30 +47,20 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, St
         StartActivity.makeToast("Little printer says: " + result);
     }
 
-    private String sendFiles(String... filePaths) {
+    private String sendFile(String filePath) {
+        File imgFile = new  File(filePath);
+        Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-        List<String> encodedImages = generateEncodedImages(filePaths);
+        Bitmap scaledBitmap = rotateAndScaleImage(bm);
 
-        String html = generateHtml(encodedImages);
+        String encodedImage = compressBitmapToBase64(scaledBitmap);
+
+        String html = generateHtml(encodedImage);
 
         String response = sendToLittlePrinter(html);
 
         Log.d(TAG, "Respons from Little printer: " + response);
         return response;
-    }
-
-    private List<String> generateEncodedImages(String... filePaths) {
-        List<String> encodedImages = new ArrayList<String>();
-        for (String filePath : filePaths) {
-            File imgFile = new  File(filePath);
-            Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-            Bitmap scaledBitmap = rotateAndScaleImage(bm);
-
-            String encodedImage = compressBitmapToBase64(scaledBitmap);
-            encodedImages.add(encodedImage);
-        }
-        return encodedImages;
     }
 
     private String sendToLittlePrinter(String html) {
@@ -109,22 +103,16 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, St
         return "No response";
     }
 
-    private String generateHtml(List<String> encodedImages) {
-        String imageTags = generateImageHtml(encodedImages);
-        String timeStamp = new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(new Date());
-        return "<html><head><meta charset=\"utf-8\"></head><body><h1>" + timeStamp + "</h1>" +
-                imageTags +
-                "</body></html>";
-    }
+    private String generateHtml(String encodedImage) {
+        String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
+                encodedImage +
+                "\" alt=\"Red dot\" />";
 
-    private String generateImageHtml(List<String> encodedImages) {
-        String result = "";
-        for (String encodedImage : encodedImages) {
-            result = result + "<img class=dither src=\"data:image/jpg;base64," +
-                    encodedImage +
-                    "\" alt=\"Red dot\" /><br>";
-        }
-        return result;
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+        return "<html><head><meta charset=\"utf-8\"></head><body><h1>" + timeStamp + "</h1>" +
+                imageTag +
+                "</body></html>";
     }
 
     private String compressBitmapToBase64(Bitmap scaledBitmap) {

@@ -76,12 +76,12 @@ public class PhotoActivity extends Activity {
     }
 
     private void countDown() {
-        countDownImage.setImageResource(R.drawable.three);
+        countDownImage.setImageResource(R.drawable.three_white);
         countDownImage.setVisibility(VISIBLE);
         final ArrayList<Integer> drawables = new ArrayList<Integer>();
-        drawables.add(0, R.drawable.three);
-        drawables.add(1, R.drawable.two);
-        drawables.add(2, R.drawable.one);
+        drawables.add(0, R.drawable.three_white);
+        drawables.add(1, R.drawable.two_white);
+        drawables.add(2, R.drawable.one_white);
         new CountDownTimer(4000, 1000) {
 
             int tick = 0;
