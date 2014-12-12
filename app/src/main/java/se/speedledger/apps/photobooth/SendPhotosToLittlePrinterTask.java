@@ -1,13 +1,11 @@
 package se.speedledger.apps.photobooth;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -25,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, String> {
@@ -35,32 +35,38 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, St
 
     @Override
     protected String doInBackground(String... filePaths) {
-        String result = "";
-        for (String path : filePaths) {
-            result = result + sendFile2(path) + " ";
-        }
-        return result;
+        return sendFiles(filePaths);
     }
 
     @Override
     protected void onPostExecute(String result) {
-        StartActivity.makeToast(result);
+        StartActivity.makeToast("Little printer says: " + result);
     }
 
-    private String sendFile2(String filePath) {
-        File imgFile = new  File(filePath);
-        Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+    private String sendFiles(String... filePaths) {
 
-        Bitmap scaledBitmap = rotateAndScaleImage(bm);
+        List<String> encodedImages = generateEncodedImages(filePaths);
 
-        String encodedImage = compressBitmapToBase64(scaledBitmap);
-
-        String html = generateHtml(encodedImage);
+        String html = generateHtml(encodedImages);
 
         String response = sendToLittlePrinter(html);
 
         Log.d(TAG, "Respons from Little printer: " + response);
         return response;
+    }
+
+    private List<String> generateEncodedImages(String... filePaths) {
+        List<String> encodedImages = new ArrayList<String>();
+        for (String filePath : filePaths) {
+            File imgFile = new  File(filePath);
+            Bitmap bm = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            Bitmap scaledBitmap = rotateAndScaleImage(bm);
+
+            String encodedImage = compressBitmapToBase64(scaledBitmap);
+            encodedImages.add(encodedImage);
+        }
+        return encodedImages;
     }
 
     private String sendToLittlePrinter(String html) {
@@ -103,14 +109,22 @@ public class SendPhotosToLittlePrinterTask extends AsyncTask<String, Integer, St
         return "No response";
     }
 
-    private String generateHtml(String encodedImage) {
-        String imageTag = "<img class=dither src=\"data:image/jpg;base64," +
-                encodedImage +
-                "\" alt=\"Red dot\" />";
-
-        return "<html><head><meta charset=\"utf-8\"></head><body><h1>An image!</h1>" +
-                imageTag +
+    private String generateHtml(List<String> encodedImages) {
+        String imageTags = generateImageHtml(encodedImages);
+        String timeStamp = new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(new Date());
+        return "<html><head><meta charset=\"utf-8\"></head><body><h1>" + timeStamp + "</h1>" +
+                imageTags +
                 "</body></html>";
+    }
+
+    private String generateImageHtml(List<String> encodedImages) {
+        String result = "";
+        for (String encodedImage : encodedImages) {
+            result = result + "<img class=dither src=\"data:image/jpg;base64," +
+                    encodedImage +
+                    "\" alt=\"Red dot\" /><br>";
+        }
+        return result;
     }
 
     private String compressBitmapToBase64(Bitmap scaledBitmap) {
