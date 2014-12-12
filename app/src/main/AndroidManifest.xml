@@ -17,8 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhotoActivity"></activity>
-        <activity android:name=".ReviewActivity"></activity>
+        <activity android:name=".PhotoActivity"/>
+        <activity android:name=".ReviewActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
     </application>
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />

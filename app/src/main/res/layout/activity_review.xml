@@ -1,59 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark">
 
-    <TableLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnCount="2"
-        android:rowCount="2">
+        android:layout_height="match_parent">
 
-        <TableRow
-            android:layout_weight="0.5">
+        <LinearLayout
+            android:id="@+id/top_row"
+            android:paddingLeft="140dp"
+            android:paddingRight="140dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp">
 
             <ImageView
                 android:id="@+id/image_first"
-                android:layout_column="0"
-                android:layout_weight="0.5"
-                android:scaleType="centerInside" />
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="end"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/image_second"
-                android:layout_column="1"
-                android:layout_weight="0.5"
-                android:scaleType="centerInside" />
-        </TableRow>
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_gravity="start"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
 
-        <TableRow
-            android:layout_weight="0.5">
+        <LinearLayout
+            android:paddingLeft="140dp"
+            android:paddingRight="140dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp">
 
             <ImageView
                 android:id="@+id/image_third"
-                android:layout_column="0"
-                android:layout_weight="0.5"
-                android:scaleType="centerInside" />
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_gravity="end"
+                android:layout_height="fill_parent" />
 
             <ImageView
                 android:id="@+id/image_fourth"
-                android:layout_column="1"
-                android:layout_weight="0.5"
-                android:scaleType="centerInside" />
-        </TableRow>
-    </TableLayout>
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_gravity="start"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_go_to_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="@string/to_start" />
 
     <Button
         android:id="@+id/button_print"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
         android:layout_below="@id/button_go_to_start"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
