@@ -173,7 +173,7 @@ public class PhotoActivity extends Activity {
             new SaveImageTask().execute(data);
             resetCam();
             Log.d(TAG, "onPictureTaken - jpeg");
-            if (pictureRound < 4) {
+            if (pictureRound < 1) {
                 pictureRound++;
                 takePicture();
             }
@@ -189,6 +189,7 @@ public class PhotoActivity extends Activity {
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
+                //"/Android/data/com.google.android.apps.docs/files" +
                 File dir = new File(sdCard.getAbsolutePath() + "/photobooth");
                 dir.mkdirs();
 
@@ -196,6 +197,7 @@ public class PhotoActivity extends Activity {
 
                 outStream = new FileOutputStream(outFile);
                 outStream.write(data[0]);
+
                 outStream.flush();
                 outStream.close();
 
@@ -214,7 +216,7 @@ public class PhotoActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            if (saveRound == 4) {
+            if (saveRound == 1) {
                 Log.d(TAG, "Go to review");
                 goToReview();
             }

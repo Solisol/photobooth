@@ -34,7 +34,8 @@ public class ReviewActivity extends Activity {
         printButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
+                //printImages(bundle.getString(Constants.FIRST), bundle.getString(Constants.SECOND), bundle.getString(Constants.THIRD), bundle.getString(Constants.FOURTH));
+                printImages(bundle.getString(Constants.FIRST));
                 goToStart();
             }
         });
@@ -46,9 +47,9 @@ public class ReviewActivity extends Activity {
 
         if(bundle != null) {
             firstPath = bundle.getString(Constants.FIRST);
-            secondPath = bundle.getString(Constants.SECOND);
-            thirdPath = bundle.getString(Constants.THIRD);
-            fourthPath = bundle.getString(Constants.FOURTH);
+            //secondPath = bundle.getString(Constants.SECOND);
+            //thirdPath = bundle.getString(Constants.THIRD);
+            //fourthPath = bundle.getString(Constants.FOURTH);
         } else {
             Log.d(this.getLocalClassName(), "Bundle is null!");
         }
@@ -60,7 +61,7 @@ public class ReviewActivity extends Activity {
             firstImage.setImageBitmap(firstBitmap);
         }
 
-        File imgFile2 = new  File(secondPath);
+        /*File imgFile2 = new  File(secondPath);
         if(imgFile2.exists()){
             ImageView secondImage = (ImageView) findViewById(R.id.image_second);
             Bitmap secondBitmap = BitmapFactory.decodeFile(imgFile2.getAbsolutePath());
@@ -79,7 +80,7 @@ public class ReviewActivity extends Activity {
             ImageView fourthImage = (ImageView) findViewById(R.id.image_fourth);
             Bitmap fourthBitmap = BitmapFactory.decodeFile(imgFile4.getAbsolutePath());
             fourthImage.setImageBitmap(fourthBitmap);
-        }
+        }*/
     }
 
     private void printImages(String... imagePaths) {
